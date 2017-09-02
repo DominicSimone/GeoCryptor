@@ -1,0 +1,7 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.dominic.geocryptor.MainActivity">
+    <item
+        android:id="@+id/action_external_file"
+        android:title="GeoCrypt External File" />
+</menu>
