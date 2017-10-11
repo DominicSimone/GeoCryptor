@@ -22,22 +22,22 @@ import java.io.FileOutputStream;
 
 public class CreateActivity extends AppCompatActivity {
 
-    GeoCryptor geo;
-    LocationFinder locFinder;
-    EditText content;
-    EditText title;
+    private GeoCryptor geo;
+    private LocationFinder locFinder;
+    private EditText content;
+    private EditText title;
 
-    String locationKey = "";
-    String formatLat = "";
-    String formatLong = "";
+    private String locationKey = "";
+    private String formatLat = "";
+    private String formatLong = "";
 
-    byte[] filetext;
+    private byte[] filetext;
 
-    boolean fileNameFound;
+    private boolean fileNameFound;
 
-    File myDirectory;
-    File file;
-    FileOutputStream fos;
+    private File myDirectory;
+    private File file;
+    private FileOutputStream fos;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,9 +122,13 @@ public class CreateActivity extends AppCompatActivity {
         });
     }
 
-    //Creates a popup directing the user to settings in order to turn on GPS
-    //Uses attemptEnableGPS() to put them in settings
-    //mode ==1; go to gps settings, ==0, do nothing
+
+    /**
+     * Creates a popup
+     * @param title Message box title
+     * @param content Message box content
+     * @param context Context of the message box
+     */
     public static void showAlert(String title, String content, Context context) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 

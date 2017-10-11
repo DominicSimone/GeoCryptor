@@ -13,13 +13,13 @@ import java.io.FileInputStream;
 
 public class ViewFile extends AppCompatActivity {
 
-    TextView contents;
-    File file;
-    byte[] fileByteContents;
-    String locationKey = "";
-    String decryptedText = "";
+    private TextView contents;
+    private File file;
+    private byte[] fileByteContents;
+    private String locationKey = "";
+    private String decryptedText = "";
 
-    LocationFinder locFinder;
+    private LocationFinder locFinder;
 
 
     @Override

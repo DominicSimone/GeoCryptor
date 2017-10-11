@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -34,15 +33,19 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private ListView myListView;
-    File myDirectory;
-    ArrayList<File> fileList;
-    LocationFinder locFinder;
-    byte[] fileBytes;
-    boolean externalGoAhead;
+    private File myDirectory;
+    private ArrayList<File> fileList;
+    private LocationFinder locFinder;
+    private byte[] fileBytes;
+    private boolean externalGoAhead;
 
     private static final int FILE_SELECT_CODE = 0;
 
     @Override
+    /**
+     * Runs at the creation of activity, checks permissions, creates necessary directories and
+     * items on screen.
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -110,7 +113,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    //When long clicking a file, this alerts the user and asks for permission to delete to prevent unwanted deletions
+    /**
+     * When long clicking a file, this alerts the user and asks for permission to delete to prevent
+     * unwanted deletions.
+     *
+     * @param file Deletes the given file if the user hits ok
+     */
     public void showDeleteAlert(final File file){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -135,13 +143,19 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    //Starts the creation activity
+    /**
+     * Starts the creation activity
+     */
     public void startCreateActivity(){
         Intent intent = new Intent(this, CreateActivity.class);
         startActivity(intent);
     }
 
-    //test file is in /storage/emulated/0/Downloads
+    /**
+     * This method handles encryption/decryption of external files
+     *
+     * @param uri of the file chosen
+     */
     public void handleExternalFile(Uri uri){
         if(isExternalStoragePermissionGranted()) {
             //Get the filename from the uri
@@ -224,7 +238,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //Displays a file chooser if the user wants to work with an external file
+    /**
+     * Displays a file choosed if the user wants to work with an external file
+     */
     private void showFileChooser() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
@@ -245,6 +261,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    /**
+     * When the user returns from the external file chooser, uri data goes through this method
+     */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case FILE_SELECT_CODE:
@@ -256,6 +275,10 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    /**
+     * Checks if external storage permission is granted
+     * @return boolean if permission is granted or not
+     */
     public boolean isExternalStoragePermissionGranted(){
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             return true;
@@ -266,6 +289,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Runs when user has either denied or granted permission
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
@@ -281,6 +310,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    /**
+     * Menu item selection system, runs action based on what user chose
+     * Menu items: External file
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long

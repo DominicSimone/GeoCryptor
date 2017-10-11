@@ -14,10 +14,13 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
 
-import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by Dominic on 8/28/2017.
+ *
+ * This method finds the location of the user.
+ *
+ * It also builds the location key used to encrypt and decrypt data
  */
 
 public class LocationFinder extends Activity{
@@ -27,15 +30,23 @@ public class LocationFinder extends Activity{
     };
     public static final int LOCATION_REQUEST = 1425;
 
+    //Digits to round to (10^locationScale)
+    final private static int locationScale = 3;
 
-    LocationManager locationManager;
-    LocationListener locationListener;
-    Location currentBestLoc;
-    Context context;
-    Activity activity;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+    private Location currentBestLoc;
+    private Context context;
+    private Activity activity;
 
-    boolean gpsEnabled;
+    private boolean gpsEnabled;
 
+    /**
+     * Constructs a LocationFinder object.
+     * Builds a LocationManager and LocationListener in the activity and context passed in.
+     * @param act the activity this method is used in
+     * @param con the context this method is used in
+     */
     public LocationFinder(Activity act, Context con){
         context = con;
         activity = act;
@@ -52,20 +63,35 @@ public class LocationFinder extends Activity{
         };
     }
 
+    /**
+     * Used to update the context of the this object (if necessary)
+     * @param act the new activity
+     * @param con the new context
+     */
     public void updateContext(Activity act, Context con){
         context = con;
         activity = act;
     }
 
-    //This code combines the latitude and longitude into one string for the encryption key generation
-    //It also rounds the latitude and longitude to 4 digits (around 10 meter square)
+
+    /**
+     * This combines the latitude and longitude into one string for the encryption key generation
+     * It also rounds the latitude and longitude to 4 digits (around 10 sq. meters)
+     * @return locKey the location key string
+     */
     public String getLocationKey(){
-        String formatLat = Math.round(getLocation().getLatitude() * 10000) / 10000. + "";
-        String formatLong = Math.round(getLocation().getLongitude() * 10000) / 10000. + "";
+        int digits = (int) Math.pow(10, locationScale);
+        String formatLat = Math.round(getLocation().getLatitude() * digits) / digits + "";
+        String formatLong = Math.round(getLocation().getLongitude() * digits) / digits + "";
         return formatLat + ", " + formatLong;
     }
 
     //Returns true if GPS was enabled and location was started
+
+    /**
+     * Attempts to start location finding
+     * @return boolean if GPS was enabled and location was started
+     */
     public boolean startUpdatingLocation(){
         gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
@@ -89,6 +115,11 @@ public class LocationFinder extends Activity{
         }
     }
 
+    /**
+     * If GPS is not enabled, this method shows an alert box informing the user
+     * "GeoCryptor needs GPS enabled in order to run successfully. Enable GPS to continue."
+     * And also runs attemptEnableGPS();
+     */
     public void showGPSAlert(){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
@@ -110,14 +141,24 @@ public class LocationFinder extends Activity{
         dialog.show();
     }
 
+    /**
+     * Removes the LocationListener and stops updating location
+     */
     public void stopUpdatingLocation(){
         locationManager.removeUpdates(locationListener);
     }
 
+    /**
+     * Gets the current best location
+     * @return the current best location
+     */
     public Location getLocation(){
         return currentBestLoc;
     }
 
+    /**
+     * Attempts to enable GPS by bringing user to GPS settings
+     */
     private void attemptEnableGPS(){
         Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         try {
@@ -129,11 +170,18 @@ public class LocationFinder extends Activity{
         }
     }
 
+    /**
+     * Restarts location finding
+     */
     public void restart(){
         stopUpdatingLocation();
         startUpdatingLocation();
     }
 
+    /**
+     * Tests if GPS is enabled on the users device
+     * @return boolean if GPS signal is available
+     */
     public boolean isGPSEnabled(){
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
